@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "Book": {
+      "title": "Book",
+      "description": "Buku katalog produk marketplace",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Judul buku" },
+        "author": { "type": "string", "description": "Penulis buku" },
+        "category": { "type": "string", "description": "Kategori buku" },
+        "price": { "type": "number", "description": "Harga jual dalam IDR" },
+        "stock": { "type": "number", "description": "Jumlah stok tersedia" },
+        "description": { "type": "string", "description": "Sinopsis atau deskripsi buku" },
+        "coverImage": { "type": "string", "description": "URL gambar sampul buku" },
+        "isbn": { "type": "string", "description": "Nomor ISBN buku" },
+        "rating": { "type": "number", "description": "Rating buku 1-5" },
+        "pages": { "type": "number", "description": "Jumlah halaman" },
+        "createdAt": { "type": "string", "description": "Waktu dibuat" },
+        "updatedAt": { "type": "string", "description": "Waktu diperbarui" }
+      },
+      "required": ["title", "author", "category", "price", "stock", "coverImage"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Transaksi pesanan pelanggan buku",
+      "type": "object",
+      "properties": {
+        "orderNumber": { "type": "string", "description": "Nomor referensi pesanan" },
+        "customerName": { "type": "string", "description": "Nama pembeli" },
+        "customerEmail": { "type": "string", "description": "Email pembeli" },
+        "customerPhone": { "type": "string", "description": "Nomor WhatsApp/telepon" },
+        "shippingAddress": { "type": "string", "description": "Alamat pengiriman lengkap" },
+        "items": { "type": "array", "description": "Daftar buku yang dibeli" },
+        "subtotal": { "type": "number", "description": "Total harga buku" },
+        "shippingCost": { "type": "number", "description": "Biaya ongkos kirim" },
+        "totalAmount": { "type": "number", "description": "Total yang harus dibayar" },
+        "status": { "type": "string", "description": "Status pesanan" },
+        "paymentMethod": { "type": "string", "description": "Metode pembayaran terpilih" },
+        "paymentProofUrl": { "type": "string", "description": "Bukti transfer / struk pembayaran" },
+        "paymentProofUploadedAt": { "type": "string", "description": "Waktu upload bukti pembayaran" },
+        "paymentRejectionReason": { "type": "string", "description": "Alasan penolakan bukti bayar" },
+        "notes": { "type": "string", "description": "Catatan tambahan pembeli" },
+        "trackingNumber": { "type": "string", "description": "Resi pengiriman" },
+        "createdAt": { "type": "string", "description": "Waktu checkout" },
+        "updatedAt": { "type": "string", "description": "Waktu update" }
+      },
+      "required": ["orderNumber", "customerName", "customerEmail", "customerPhone", "shippingAddress", "totalAmount", "status"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Profil dan riwayat akumulasi pembeli",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Nama pelanggan" },
+        "email": { "type": "string", "description": "Email pelanggan" },
+        "phone": { "type": "string", "description": "Nomor kontak" },
+        "totalOrders": { "type": "number", "description": "Total pesanan dibuat" },
+        "totalSpent": { "type": "number", "description": "Total pembelanjaan akumulatif" },
+        "lastOrderDate": { "type": "string", "description": "Tanggal pesanan terakhir" },
+        "createdAt": { "type": "string", "description": "Tanggal pertama belanja" }
+      },
+      "required": ["name", "email", "phone"]
+    }
+  },
+  "firestore": {
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Koleksi buku katalog toko"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Koleksi data order transaksi"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Koleksi data pelanggan toko"
+    }
+  }
+}

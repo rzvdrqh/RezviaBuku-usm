@@ -1,0 +1,6 @@
+{
+  "name": "PustakaKarsa - Bookstore Marketplace",
+  "description": "Toko buku online modern dengan real-time inventory Firestore, shopping cart, upload bukti bayar, dan dashboard admin terpadu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

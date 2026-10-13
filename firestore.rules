@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Koleksi buku: dapat dibaca oleh seluruh pengunjung webstore, dikelola oleh admin/sistem
+    match /books/{bookId} {
+      allow read, write: if true;
+    }
+
+    // Koleksi transaksi pesanan: pelanggan dapat membuat pesanan & upload bukti bayar, admin mengelola status & approval
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+
+    // Koleksi data pelanggan: sinkronisasi otomatis dari transaksi dan manajemen admin
+    match /customers/{customerId} {
+      allow read, write: if true;
+    }
+  }
+}
