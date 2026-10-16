@@ -3,6 +3,7 @@ import { Star, ShoppingCart, Eye, Check } from 'lucide-react';
 import { Book } from '../types';
 import { formatRupiah } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
+import { resolveCoverUrl } from '../utils/coverResolver';
 
 interface BookCardProps {
   book: Book;
@@ -80,10 +81,16 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onSelect }) => {
       <div className="relative aspect-[3/4] w-full bg-[#fdf8f5] overflow-hidden p-3 flex items-center justify-center">
         <div className="w-full h-full rounded-2xl overflow-hidden shadow-xs border border-rose-100/60 relative">
           <img
-            src={book.coverImage}
+            src={resolveCoverUrl(book.coverImage, book.title)}
             alt={book.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.endsWith('/covers/cover_bumi_manusia.jpg')) {
+                target.src = '/covers/cover_bumi_manusia.jpg';
+              }
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-3">
             <span className="text-white text-[11px] font-semibold flex items-center gap-1.5 bg-black/40 backdrop-blur-xs px-3 py-1 rounded-full">

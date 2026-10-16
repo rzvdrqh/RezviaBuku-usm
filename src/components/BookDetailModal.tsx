@@ -4,6 +4,7 @@ import { Book } from '../types';
 import { formatRupiah } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
 import { getCategoryPastelStyle } from './BookCard';
+import { resolveCoverUrl } from '../utils/coverResolver';
 
 interface BookDetailModalProps {
   book: Book | null;
@@ -60,11 +61,17 @@ export const BookDetailModal: React.FC<BookDetailModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
           {/* Cover Section (Strictly picture of book) */}
           <div className="md:col-span-5 bg-gradient-to-b from-rose-50/70 to-pink-50/40 p-6 sm:p-8 flex items-center justify-center relative border-b md:border-b-0 md:border-r border-rose-100/60">
-            <div className="w-48 sm:w-56 aspect-[3/4] rounded-2xl shadow-md overflow-hidden border-2 border-white ring-1 ring-rose-200/60">
+            <div className="w-48 sm:w-56 aspect-[3/4] rounded-2xl shadow-md overflow-hidden border-2 border-white ring-1 ring-rose-200/60 bg-rose-50">
               <img
-                src={book.coverImage}
+                src={resolveCoverUrl(book.coverImage, book.title)}
                 alt={book.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.endsWith('/covers/cover_bumi_manusia.jpg')) {
+                    target.src = '/covers/cover_bumi_manusia.jpg';
+                  }
+                }}
               />
             </div>
           </div>

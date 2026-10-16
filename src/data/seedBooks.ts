@@ -1,21 +1,5 @@
 import { Book } from '../types';
 
-import coverBumiManusia from '../assets/images/cover_bumi_manusia_1791979833866.jpg';
-import coverLautBercerita from '../assets/images/cover_laut_bercerita_1791979859807.jpg';
-import coverCantikLuka from '../assets/images/cover_cantik_luka_1791979885589.jpg';
-import coverJujutsuKaisen from '../assets/images/cover_jujutsu_kaisen_1791979912911.jpg';
-import coverOnePiece100 from '../assets/images/cover_onepiece_100_1791979950266.jpg';
-import coverSpyFamily from '../assets/images/cover_spy_family_1791979990497.jpg';
-import coverSapiens from '../assets/images/cover_sapiens_1791980038907.jpg';
-import coverKosmos from '../assets/images/cover_kosmos_1791980087624.jpg';
-import coverCleanCode from '../assets/images/cover_clean_code_1791980138030.jpg';
-import coverGrammarInUse from '../assets/images/cover_grammar_in_use_1791980188430.jpg';
-import coverNihongoKiraKira from '../assets/images/cover_nihongo_kirakira_1791980248659.jpg';
-import coverBahasaKorea from '../assets/images/cover_bahasa_korea_1791980301739.jpg';
-import coverToeflOfficial from '../assets/images/cover_toefl_official_1791980360970.jpg';
-import coverCpnsDiktat from '../assets/images/cover_cpns_diktat_1791980430096.jpg';
-import coverUtbkSnbt from '../assets/images/cover_utbk_snbt_1791980500802.jpg';
-
 export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
   // --- Kategori 1: Novel ---
   {
@@ -29,7 +13,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-9799731234',
     pages: 535,
     rating: 4.9,
-    coverImage: coverBumiManusia,
+    coverImage: '/covers/cover_bumi_manusia.jpg',
     description: 'Roman sejarah sastra Indonesia karya Pramoedya Ananta Toer, berlatar akhir abad ke-19 kolonial Hindia Belanda. Mengisahkan perjuangan Minke menembus batas feodalisme dan kolonialisme bersama Annelies dan Nyai Ontosoroh.',
     createdAt: new Date().toISOString(),
   },
@@ -44,7 +28,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6024246945',
     pages: 379,
     rating: 4.9,
-    coverImage: coverLautBercerita,
+    coverImage: '/covers/cover_laut_bercerita.jpg',
     description: 'Novel mendalam tentang persahabatan, cinta, kekeluargaan, dan perjuangan aktivis mahasiswa 1998 yang diculik. Bertutur dari sudut pandang Biru Laut yang terbelenggu di dasar samudra dan adiknya, Asmara Jati.',
     createdAt: new Date().toISOString(),
   },
@@ -59,7 +43,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6020312588',
     pages: 508,
     rating: 4.8,
-    coverImage: coverCantikLuka,
+    coverImage: '/covers/cover_cantik_luka.jpg',
     description: 'Sebuah mahakarya realisme magis Indonesia yang telah diterjemahkan ke lebih dari 30 bahasa. Mengikuti riwayat Dewi Ayu, pelacur di Halimunda, beserta anak-anak perempuannya yang menanggung kutukan kecantikan.',
     createdAt: new Date().toISOString(),
   },
@@ -76,7 +60,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6230018923',
     pages: 192,
     rating: 4.9,
-    coverImage: coverJujutsuKaisen,
+    coverImage: '/covers/cover_jujutsu_kaisen.jpg',
     description: 'Komik shonen Jepang populer. Yuji Itadori adalah siswa SMA dengan kemampuan fisik luar biasa yang secara tidak sengaja menelan jari terkutuk Ryomen Sukuna dan memasuki dunia para penyihir jujutsu.',
     createdAt: new Date().toISOString(),
   },
@@ -91,7 +75,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6230302145',
     pages: 208,
     rating: 5.0,
-    coverImage: coverOnePiece100,
+    coverImage: '/covers/cover_onepiece_100.jpg',
     description: 'Tonggak bersejarah volume ke-100 petualangan Monkey D. Luffy dan Bajak Laut Topi Jerami dalam pertarungan puncak di negeri Wano melawan Kaisar Kaido dan Big Mom.',
     createdAt: new Date().toISOString(),
   },
@@ -106,7 +90,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6230017643',
     pages: 216,
     rating: 4.9,
-    coverImage: coverSpyFamily,
+    coverImage: '/covers/cover_spy_family.jpg',
     description: 'Keluarga mata-mata unik: Agen Twilight alias Loid Forger menyamar menjadi ayah, mengadopsi Anya si pembaca pikiran, dan menikahi Yor si pembunuh bayaran tanpa saling tahu identitas asli.',
     createdAt: new Date().toISOString(),
   },
@@ -123,7 +107,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6024244163',
     pages: 512,
     rating: 4.9,
-    coverImage: coverSapiens,
+    coverImage: '/covers/cover_sapiens.jpg',
     description: 'Menelusuri sejarah evolusi Homo sapiens dari kera tak berarti di padang Afrika hingga penguasa planet Bumi melalui Revolusi Kognitif, Revolusi Pertanian, dan Revolusi Ilmiah modern.',
     createdAt: new Date().toISOString(),
   },
@@ -138,7 +122,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6024242190',
     pages: 480,
     rating: 5.0,
-    coverImage: coverKosmos,
+    coverImage: '/covers/cover_kosmos.jpg',
     description: 'Karya agung astronom legendaris Carl Sagan yang memadukan astronomi, kosmologi, filsafat peradaban, dan keindahan alam semesta dalam bahasa yang sangat puitis dan menginspirasi.',
     createdAt: new Date().toISOString(),
   },
@@ -153,7 +137,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6028891002',
     pages: 464,
     rating: 4.8,
-    coverImage: coverCleanCode,
+    coverImage: '/covers/cover_clean_code.jpg',
     description: 'Panduan fundamental software engineering bagi programmer untuk menulis kode yang bersih, mudah dibaca, modular, dan siap diskalakan dalam arsitektur sistem modern.',
     createdAt: new Date().toISOString(),
   },
@@ -170,7 +154,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-1108457651',
     pages: 390,
     rating: 4.9,
-    coverImage: coverGrammarInUse,
+    coverImage: '/covers/cover_grammar_in_use.jpg',
     description: 'Buku tata bahasa Inggris referensi dunia nomor satu. Dilengkapi penjelasan rumus praktis di halaman kiri dan latihan soal aplikatif di halaman kanan untuk pemula hingga tingkat lanjut.',
     createdAt: new Date().toISOString(),
   },
@@ -185,7 +169,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6020619820',
     pages: 320,
     rating: 4.8,
-    coverImage: coverNihongoKiraKira,
+    coverImage: '/covers/cover_nihongo_kirakira.jpg',
     description: 'Panduan komprehensif menguasai huruf Hiragana, Katakana, pola kalimat esensial, partikel tata bahasa, dan kosakata JLPT N5 hingga N4 secara bertahap dan mudah dipahami.',
     createdAt: new Date().toISOString(),
   },
@@ -200,7 +184,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6020623340',
     pages: 288,
     rating: 4.7,
-    coverImage: coverBahasaKorea,
+    coverImage: '/covers/cover_bahasa_korea.jpg',
     description: 'Kumpulan dialog percakapan situasional, aturan Hangeul, ekspresi gaul, dan kosakata penting Korea yang sering dipakai dalam drama, lirik lagu, dan kehidupan sehari-hari.',
     createdAt: new Date().toISOString(),
   },
@@ -217,7 +201,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-1260470352',
     pages: 680,
     rating: 5.0,
-    coverImage: coverToeflOfficial,
+    coverImage: '/covers/cover_toefl_official.jpg',
     description: 'Buku resmi langsung dari pembuat tes TOEFL (ETS). Berisi strategi jitu menguasai 4 sesi tes: Reading, Listening, Speaking, dan Writing disertai ratusan contoh soal asli.',
     createdAt: new Date().toISOString(),
   },
@@ -232,7 +216,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6024128892',
     pages: 580,
     rating: 4.9,
-    coverImage: coverCpnsDiktat,
+    coverImage: '/covers/cover_cpns_diktat.jpg',
     description: 'Bedah tuntas kisi-kisi resmi Badan Kepegawaian Negara (BKN). Meliputi Tes Wawasan Kebangsaan (TWK), Tes Inteligensi Umum (TIU), dan Tes Karakteristik Pribadi (TKP) dengan trik cepat 20 detik.',
     createdAt: new Date().toISOString(),
   },
@@ -247,7 +231,7 @@ export const INITIAL_BOOKS: Omit<Book, 'id'>[] = [
     isbn: '978-6020658821',
     pages: 540,
     rating: 4.9,
-    coverImage: coverUtbkSnbt,
+    coverImage: '/covers/cover_utbk_snbt.jpg',
     description: 'Bank soal prediktif paling akurat untuk menembus PTN impian. Membahas Penalaran Umum, Pengetahuan & Pemahaman Umum, Pemahaman Bacaan & Menulis, serta Penalaran Matematika.',
     createdAt: new Date().toISOString(),
   },

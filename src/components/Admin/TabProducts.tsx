@@ -18,6 +18,7 @@ import {
 import { Book } from '../../types';
 import { addBook, updateBook, deleteBook, resetBooksToDefault } from '../../services/storeService';
 import { formatRupiah } from '../../utils/formatters';
+import { resolveCoverUrl } from '../../utils/coverResolver';
 
 interface TabProductsProps {
   books: Book[];
@@ -319,9 +320,15 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books, onOpenPricingTa
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={book.coverImage}
+                            src={resolveCoverUrl(book.coverImage, book.title)}
                             alt={book.title}
-                            className="w-10 h-14 object-cover rounded-md border border-slate-200 shadow-2xs shrink-0"
+                            className="w-10 h-14 object-cover rounded-md border border-slate-200 shadow-2xs shrink-0 bg-rose-50"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              if (!target.src.endsWith('/covers/cover_bumi_manusia.jpg')) {
+                                target.src = '/covers/cover_bumi_manusia.jpg';
+                              }
+                            }}
                           />
                           <div>
                             <span className="font-serif font-bold text-slate-900 text-sm block">

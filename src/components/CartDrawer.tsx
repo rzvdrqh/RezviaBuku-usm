@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Trash2, ShoppingBag, ArrowRight, BookOpen } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatRupiah } from '../utils/formatters';
+import { resolveCoverUrl } from '../utils/coverResolver';
 
 interface CartDrawerProps {
   onProceedCheckout: () => void;
@@ -76,9 +77,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onProceedCheckout }) => 
                 <div key={book.id} className="py-3.5 flex gap-3 group">
                   {/* Book thumbnail */}
                   <img
-                    src={book.coverImage}
+                    src={resolveCoverUrl(book.coverImage, book.title)}
                     alt={book.title}
-                    className="w-16 h-22 object-cover rounded-xl border border-rose-100 shrink-0 shadow-2xs"
+                    className="w-16 h-22 object-cover rounded-xl border border-rose-100 shrink-0 shadow-2xs bg-rose-50"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.src.endsWith('/covers/cover_bumi_manusia.jpg')) {
+                        target.src = '/covers/cover_bumi_manusia.jpg';
+                      }
+                    }}
                   />
 
                   {/* Info and controls */}

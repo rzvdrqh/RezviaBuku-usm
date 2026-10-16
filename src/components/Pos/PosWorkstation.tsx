@@ -25,6 +25,7 @@ import { formatRupiah } from '../../utils/formatters';
 import { PosReceiptModal } from './PosReceiptModal';
 import { useAuth } from '../../context/AuthContext';
 import { getCategoryPastelStyle } from '../BookCard';
+import { resolveCoverUrl } from '../../utils/coverResolver';
 
 interface PosWorkstationProps {
   books: Book[];
@@ -312,12 +313,18 @@ export const PosWorkstation: React.FC<PosWorkstationProps> = ({ books, onBack })
                   }`}
                 >
                   <div className="space-y-2">
-                    <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-rose-50/30 border border-rose-100/60">
+                    <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-rose-50/50 border border-rose-100/60">
                       <img
-                        src={book.coverImage}
+                        src={resolveCoverUrl(book.coverImage, book.title)}
                         alt={book.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.src.endsWith('/covers/cover_bumi_manusia.jpg')) {
+                            target.src = '/covers/cover_bumi_manusia.jpg';
+                          }
+                        }}
                       />
                       <span
                         className={`absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md border ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}

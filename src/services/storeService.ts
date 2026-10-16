@@ -21,6 +21,8 @@ const BOOKS_COLLECTION = 'books';
 const ORDERS_COLLECTION = 'orders';
 const CUSTOMERS_COLLECTION = 'customers';
 
+import { resolveCoverUrl } from '../utils/coverResolver';
+
 /**
  * Real-time listener for Books collection
  */
@@ -29,10 +31,14 @@ export function subscribeBooks(callback: (books: Book[]) => void): () => void {
   return onSnapshot(
     booksRef,
     (snapshot) => {
-      const books: Book[] = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...(docSnap.data() as Omit<Book, 'id'>),
-      }));
+      const books: Book[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data() as Omit<Book, 'id'>;
+        return {
+          id: docSnap.id,
+          ...data,
+          coverImage: resolveCoverUrl(data.coverImage, data.title),
+        };
+      });
       // Sort by category then title
       books.sort((a, b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title));
       callback(books);
@@ -53,7 +59,7 @@ export async function seedBooksIfEmpty(): Promise<boolean> {
     const hasCostPrice = snap.docs.some((d) => d.data().costPrice !== undefined);
     const hasOutdatedCovers = snap.docs.some((d) => {
       const img = d.data().coverImage || '';
-      return img.includes('unsplash.com');
+      return img.includes('unsplash.com') || img.includes('@fs') || img.includes('localhost') || !img.startsWith('/covers/');
     });
 
     if (snap.empty || !hasNewCategories || !hasCostPrice) {
@@ -75,17 +81,20 @@ export async function seedBooksIfEmpty(): Promise<boolean> {
       await batch.commit();
       return true;
     } else if (hasOutdatedCovers) {
-      console.log('Synchronizing real book covers for existing database records...');
+      console.log('Synchronizing public static covers for existing Firestore records...');
       const updateBatch = writeBatch(db);
       let updatedCount = 0;
       for (const docSnap of snap.docs) {
         const data = docSnap.data();
+        const currentCover = data.coverImage || '';
         const matchingInitial = INITIAL_BOOKS.find(
           (b) => b.title.trim().toLowerCase() === data.title?.trim().toLowerCase()
         );
-        if (matchingInitial && matchingInitial.coverImage !== data.coverImage) {
+        const resolvedCover = matchingInitial?.coverImage || resolveCoverUrl(currentCover, data.title);
+
+        if (resolvedCover && resolvedCover !== currentCover) {
           updateBatch.update(docSnap.ref, {
-            coverImage: matchingInitial.coverImage,
+            coverImage: resolvedCover,
             updatedAt: new Date().toISOString(),
           });
           updatedCount++;
@@ -93,7 +102,7 @@ export async function seedBooksIfEmpty(): Promise<boolean> {
       }
       if (updatedCount > 0) {
         await updateBatch.commit();
-        console.log(`Updated ${updatedCount} book covers with authentic real book cover art.`);
+        console.log(`Updated ${updatedCount} book covers to permanent public URLs.`);
       }
       return true;
     }
