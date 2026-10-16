@@ -12,6 +12,8 @@ import {
   Package,
   Layers,
   Sparkles,
+  Percent,
+  Calculator,
 } from 'lucide-react';
 import { Book } from '../../types';
 import { addBook, updateBook, deleteBook, resetBooksToDefault } from '../../services/storeService';
@@ -19,6 +21,7 @@ import { formatRupiah } from '../../utils/formatters';
 
 interface TabProductsProps {
   books: Book[];
+  onOpenPricingTab?: () => void;
 }
 
 const CATEGORIES = [
@@ -30,7 +33,7 @@ const CATEGORIES = [
   'Buku Tes (TOEFL / CPNS / UTBK)',
 ];
 
-export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
+export const TabProducts: React.FC<TabProductsProps> = ({ books, onOpenPricingTab }) => {
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('Semua Kategori');
 
@@ -45,7 +48,9 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
   const [formTitle, setFormTitle] = useState('');
   const [formAuthor, setFormAuthor] = useState('');
   const [formCategory, setFormCategory] = useState('Novel');
-  const [formPrice, setFormPrice] = useState(100000);
+  const [formCostPrice, setFormCostPrice] = useState(70000);
+  const [formProfitRatio, setFormProfitRatio] = useState(30);
+  const [formPrice, setFormPrice] = useState(91000);
   const [formStock, setFormStock] = useState(20);
   const [formCoverImage, setFormCoverImage] = useState('');
   const [formDescription, setFormDescription] = useState('');
@@ -65,11 +70,33 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
     return matchCat && matchSearch;
   });
 
+  const handleCostPriceChange = (val: number) => {
+    setFormCostPrice(val);
+    const raw = val * (1 + formProfitRatio / 100);
+    setFormPrice(Math.round(raw / 500) * 500);
+  };
+
+  const handleProfitRatioChange = (val: number) => {
+    setFormProfitRatio(val);
+    const raw = formCostPrice * (1 + val / 100);
+    setFormPrice(Math.round(raw / 500) * 500);
+  };
+
+  const handlePriceChange = (val: number) => {
+    setFormPrice(val);
+    if (formCostPrice > 0) {
+      const ratio = ((val - formCostPrice) / formCostPrice) * 100;
+      setFormProfitRatio(Number(ratio.toFixed(1)));
+    }
+  };
+
   const openAddModal = () => {
     setFormTitle('');
     setFormAuthor('');
-    setFormCategory('Fiksi & Sastra');
-    setFormPrice(95000);
+    setFormCategory('Novel');
+    setFormCostPrice(70000);
+    setFormProfitRatio(30);
+    setFormPrice(91000);
     setFormStock(20);
     setFormCoverImage('https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=640&auto=format&fit=crop');
     setFormDescription('');
@@ -79,10 +106,15 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
   };
 
   const openEditModal = (book: Book) => {
+    const cost = book.costPrice || Math.round(book.price * 0.7);
+    const ratio = book.profitRatio || Number((((book.price - cost) / cost) * 100).toFixed(1));
+
     setEditingBook(book);
     setFormTitle(book.title);
     setFormAuthor(book.author);
     setFormCategory(book.category);
+    setFormCostPrice(cost);
+    setFormProfitRatio(ratio);
     setFormPrice(book.price);
     setFormStock(book.stock);
     setFormCoverImage(book.coverImage);
@@ -101,6 +133,8 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
           title: formTitle.trim(),
           author: formAuthor.trim(),
           category: formCategory,
+          costPrice: Number(formCostPrice),
+          profitRatio: Number(formProfitRatio),
           price: Number(formPrice),
           stock: Number(formStock),
           coverImage: formCoverImage.trim(),
@@ -115,6 +149,8 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
           title: formTitle.trim(),
           author: formAuthor.trim(),
           category: formCategory,
+          costPrice: Number(formCostPrice),
+          profitRatio: Number(formProfitRatio),
           price: Number(formPrice),
           stock: Number(formStock),
           coverImage: formCoverImage.trim(),
@@ -151,13 +187,13 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
   };
 
   const handleResetCatalog = async () => {
-    if (confirm('Apakah Anda yakin ingin mengatur ulang katalog ke 12 buku standar awal?')) {
+    if (confirm('Apakah Anda yakin ingin mengatur ulang katalog ke 15 buku bawaan dengan sampul buku asli?')) {
       setIsResetting(true);
       try {
         await resetBooksToDefault();
-        notify('Katalog berhasil direset ke 12 buku bawaan!');
+        notify('Katalog berhasil diperbarui ke 15 buku dengan sampul asli & rasio profit!');
       } catch (err) {
-        alert('Gagal mereset: ' + String(err));
+        alert('Gagal mereset: ' + (err instanceof Error ? err.message : String(err)));
       } finally {
         setIsResetting(false);
       }
@@ -187,6 +223,17 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenPricingTab && (
+            <button
+              onClick={onOpenPricingTab}
+              className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-xl border border-emerald-200 transition-colors flex items-center gap-1.5"
+              title="Buka Pengaturan Harga & Rasio Margin"
+            >
+              <Percent className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Kelola Auto-Ratio Profit</span>
+            </button>
+          )}
+
           <button
             onClick={handleResetCatalog}
             disabled={isResetting}
@@ -244,7 +291,8 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
               <tr>
                 <th className="py-3 px-4">Buku & Penulis</th>
                 <th className="py-3 px-4">Kategori</th>
-                <th className="py-3 px-4">Harga</th>
+                <th className="py-3 px-4">Harga Jual</th>
+                <th className="py-3 px-4">HPP & Rasio Profit</th>
                 <th className="py-3 px-4">Stok Saat Ini</th>
                 <th className="py-3 px-4 text-center">Ubah Stok Cepat</th>
                 <th className="py-3 px-4 text-right">Aksi</th>
@@ -253,7 +301,7 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
             <tbody className="divide-y divide-slate-100">
               {filteredBooks.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
                     Tidak ada buku yang cocok dengan pencarian.
                   </td>
                 </tr>
@@ -261,6 +309,9 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
                 filteredBooks.map((book) => {
                   const isLow = book.stock > 0 && book.stock <= 5;
                   const isOut = book.stock === 0;
+                  const cost = book.costPrice || Math.round(book.price * 0.7);
+                  const ratio = book.profitRatio || Number((((book.price - cost) / cost) * 100).toFixed(1));
+                  const profitAmt = book.price - cost;
 
                   return (
                     <tr key={book.id} className="hover:bg-slate-50/80 transition-colors">
@@ -291,9 +342,26 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
                         </span>
                       </td>
 
-                      {/* Price */}
+                      {/* Selling Price */}
                       <td className="py-3 px-4 font-mono font-bold text-slate-800">
                         {formatRupiah(book.price)}
+                      </td>
+
+                      {/* HPP & Margin */}
+                      <td className="py-3 px-4">
+                        <div className="space-y-0.5">
+                          <div className="text-slate-500 font-mono text-[11px]">
+                            HPP: {formatRupiah(cost)}
+                          </div>
+                          <div className="flex items-center gap-1 font-mono text-[11px]">
+                            <span className="bg-emerald-50 text-emerald-800 font-bold px-1 rounded border border-emerald-200">
+                              +{ratio}%
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-normal">
+                              (+{formatRupiah(profitAmt)})
+                            </span>
+                          </div>
+                        </div>
                       </td>
 
                       {/* Stock badge */}
@@ -456,7 +524,7 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Kategori *</label>
                   <select
@@ -472,19 +540,7 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Harga Jual (Rp) *</label>
-                  <input
-                    type="number"
-                    min="1000"
-                    step="1000"
-                    required
-                    value={formPrice}
-                    onChange={(e) => setFormPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Jumlah Stok *</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Jumlah Stok Fisik *</label>
                   <input
                     type="number"
                     min="0"
@@ -493,6 +549,77 @@ export const TabProducts: React.FC<TabProductsProps> = ({ books }) => {
                     onChange={(e) => setFormStock(Number(e.target.value))}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold"
                   />
+                </div>
+              </div>
+
+              {/* Live Pricing & Auto-Ratio Calculator Box */}
+              <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-amber-900 flex items-center gap-1.5">
+                    <Calculator className="w-3.5 h-3.5 text-amber-600" />
+                    Kalkulator Auto-Ratio Profit Toko
+                  </span>
+                  <span className="text-[10px] text-slate-500">
+                    Rumus Markup: Jual = HPP × (1 + Margin%)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block font-semibold text-slate-700 text-[11px] mb-1">
+                      Harga Beli / HPP (Rp) *
+                    </label>
+                    <input
+                      type="number"
+                      min="1000"
+                      step="500"
+                      required
+                      value={formCostPrice}
+                      onChange={(e) => handleCostPriceChange(Number(e.target.value))}
+                      className="w-full px-2.5 py-1.5 bg-white border border-amber-200 rounded-xl font-mono text-xs font-bold text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 text-[11px] mb-1">
+                      Rasio Margin Profit (%) *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="1"
+                        max="300"
+                        step="0.5"
+                        required
+                        value={formProfitRatio}
+                        onChange={(e) => handleProfitRatioChange(Number(e.target.value))}
+                        className="w-full px-2.5 py-1.5 bg-white border border-amber-200 rounded-xl font-mono text-xs font-bold text-emerald-700 pr-6"
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-[11px]">%</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 text-[11px] mb-1">
+                      Harga Jual Kasir/Web (Rp) *
+                    </label>
+                    <input
+                      type="number"
+                      min="1000"
+                      step="500"
+                      required
+                      value={formPrice}
+                      onChange={(e) => handlePriceChange(Number(e.target.value))}
+                      className="w-full px-2.5 py-1.5 bg-white border border-amber-300 rounded-xl font-mono text-xs font-bold text-amber-900 ring-2 ring-amber-400/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] pt-1 border-t border-amber-200/60 text-slate-600">
+                  <span>Estimasi Keuntungan Kotor per Buku:</span>
+                  <span className="font-mono font-bold text-emerald-700">
+                    +{formatRupiah(Math.max(0, formPrice - formCostPrice))} ({formProfitRatio}%)
+                  </span>
                 </div>
               </div>
 

@@ -196,9 +196,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     } catch (err) {
       console.error('Checkout error:', err);
       setIsSubmitting(false);
-      setErrorMessage(
-        err instanceof Error ? err.message : 'Terjadi kendala saat menyimpan pesanan ke database Firestore.'
-      );
+      let msg = 'Terjadi kendala saat menyimpan pesanan ke database Firestore.';
+      if (err instanceof Error) {
+        try {
+          const parsed = JSON.parse(err.message);
+          msg = parsed.error || err.message;
+        } catch {
+          msg = err.message;
+        }
+      }
+      setErrorMessage(msg);
     }
   };
 

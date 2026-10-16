@@ -42,8 +42,30 @@ export const TabSalesReport: React.FC<TabSalesReportProps> = ({ orders, books })
     (sum, o) => sum + o.items.reduce((s, it) => s + it.quantity, 0),
     0
   );
-  const completedOrdersCount = filteredOrders.filter((o) => o.status === 'selesai' || o.status === 'diproses' || o.status === 'dikirim').length;
+  const completedOrdersCount = filteredOrders.filter(
+    (o) => o.status === 'selesai' || o.status === 'diproses' || o.status === 'dikirim'
+  ).length;
   const averageOrderValue = filteredOrders.length > 0 ? totalRevenue / filteredOrders.length : 0;
+
+  // Calculate COGS and Gross Profit from actual costPrice
+  const totalCogs = filteredOrders.reduce(
+    (sum, o) =>
+      sum +
+      o.items.reduce(
+        (s, it) => s + (it.costPrice || Math.round(it.price * 0.7)) * it.quantity,
+        0
+      ),
+    0
+  );
+  const totalGrossProfit = Math.max(0, totalRevenue - totalCogs);
+  const grossProfitMargin =
+    totalRevenue > 0 ? Number(((totalGrossProfit / totalRevenue) * 100).toFixed(1)) : 0;
+
+  // Omnichannel breakdown: PoS Cashier vs Online Webstore
+  const posOrders = filteredOrders.filter((o) => o.channel === 'pos');
+  const webOrders = filteredOrders.filter((o) => o.channel !== 'pos');
+  const posRevenue = posOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+  const webRevenue = webOrders.reduce((sum, o) => sum + o.totalAmount, 0);
 
   // Category sales breakdown
   const categorySales: Record<string, { revenue: number; units: number }> = {
@@ -157,7 +179,23 @@ export const TabSalesReport: React.FC<TabSalesReportProps> = ({ orders, books })
             {formatRupiah(totalRevenue)}
           </div>
           <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-            <ArrowUpRight className="w-3.5 h-3.5" /> Bersumber dari {filteredOrders.length} transaksi
+            <ArrowUpRight className="w-3.5 h-3.5" /> {filteredOrders.length} total transaksi masuk
+          </p>
+        </div>
+
+        {/* Laba Kotor (Gross Profit) */}
+        <div className="bg-white p-5 rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white to-emerald-50/40 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-emerald-600">
+            <span className="text-xs font-bold uppercase tracking-wider">Estimasi Laba Kotor</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+              +{grossProfitMargin}%
+            </div>
+          </div>
+          <div className="text-2xl font-bold font-mono text-emerald-700">
+            {formatRupiah(totalGrossProfit)}
+          </div>
+          <p className="text-[11px] text-slate-500">
+            Modal HPP: <span className="font-mono">{formatRupiah(totalCogs)}</span>
           </p>
         </div>
 
@@ -172,22 +210,8 @@ export const TabSalesReport: React.FC<TabSalesReportProps> = ({ orders, books })
           <div className="text-2xl font-bold font-mono text-slate-900">
             {totalBooksSold} <span className="text-sm font-sans font-normal text-slate-500">Eksemplar</span>
           </div>
-          <p className="text-[11px] text-slate-500">Akumulasi seluruh volume buku keluar</p>
-        </div>
-
-        {/* Successful Orders */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-2">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Transaksi Sukses</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold font-mono text-slate-900">
-            {completedOrdersCount} <span className="text-sm font-sans font-normal text-slate-500">Pesanan</span>
-          </div>
           <p className="text-[11px] text-slate-500">
-            Telah dibayar & disetujui admin
+            {completedOrdersCount} transaksi selesai diproses
           </p>
         </div>
 
@@ -203,6 +227,47 @@ export const TabSalesReport: React.FC<TabSalesReportProps> = ({ orders, books })
             {formatRupiah(averageOrderValue)}
           </div>
           <p className="text-[11px] text-slate-500">Nilai rata-rata keranjang pembeli</p>
+        </div>
+      </div>
+
+      {/* Omnichannel Channel Split Banner: Webstore vs PoS Kasir */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PoS Store */}
+        <div className="flex items-center justify-between p-3.5 bg-rose-50/60 border border-rose-100 rounded-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+              PoS
+            </div>
+            <div>
+              <h5 className="font-bold text-xs text-rose-950">Transaksi Kasir Toko (Offline)</h5>
+              <p className="text-[11px] text-rose-700">{posOrders.length} transaksi kasir selesai</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="font-mono font-bold text-sm text-rose-900 block">{formatRupiah(posRevenue)}</span>
+            <span className="text-[10px] text-rose-600 font-medium">
+              {totalRevenue > 0 ? ((posRevenue / totalRevenue) * 100).toFixed(0) : 0}% total omset
+            </span>
+          </div>
+        </div>
+
+        {/* Webstore Online */}
+        <div className="flex items-center justify-between p-3.5 bg-sky-50/60 border border-sky-100 rounded-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+              Web
+            </div>
+            <div>
+              <h5 className="font-bold text-xs text-sky-950">Pesanan Webstore Marketplace</h5>
+              <p className="text-[11px] text-sky-700">{webOrders.length} pesanan online masuk</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="font-mono font-bold text-sm text-sky-900 block">{formatRupiah(webRevenue)}</span>
+            <span className="text-[10px] text-sky-600 font-medium">
+              {totalRevenue > 0 ? ((webRevenue / totalRevenue) * 100).toFixed(0) : 0}% total omset
+            </span>
+          </div>
         </div>
       </div>
 

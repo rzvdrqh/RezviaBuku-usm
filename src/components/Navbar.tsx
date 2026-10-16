@@ -15,8 +15,8 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
-  currentView: 'store' | 'admin';
-  setCurrentView: (view: 'store' | 'admin') => void;
+  currentView: 'store' | 'admin' | 'pos';
+  setCurrentView: (view: 'store' | 'admin' | 'pos') => void;
   onOpenTracker: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -111,8 +111,30 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {/* Right Action buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* View Switcher: Store vs Admin */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Mode Kasir PoS Quick Shortcut - Khusus Admin */}
+            {isAdmin && (
+              <button
+                onClick={() => setCurrentView(currentView === 'pos' ? 'store' : 'pos')}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold rounded-2xl transition-all border shadow-2xs ${
+                  currentView === 'pos'
+                    ? 'bg-rose-500 text-white border-rose-600 shadow-rose-200'
+                    : 'text-rose-800 hover:text-rose-900 bg-rose-50/90 hover:bg-rose-100/90 border-rose-200/80'
+                }`}
+                title="Point of Sale (PoS) - Kasir Toko Fisik Langsung"
+              >
+                <ShoppingBag className="w-4 h-4 text-rose-500 fill-rose-100" />
+                <span className="hidden sm:inline">
+                  {currentView === 'pos' ? 'Tutup Kasir' : 'Kasir PoS'}
+                </span>
+                <span className="sm:hidden">PoS</span>
+                <span className="text-[10px] font-bold bg-amber-300 text-slate-900 px-1.5 py-0.2 rounded-full hidden md:inline">
+                  Kasir
+                </span>
+              </button>
+            )}
+
+            {/* View Switcher: Store vs Admin vs Pos */}
             {currentView === 'admin' ? (
               <button
                 onClick={() => setCurrentView('store')}
@@ -120,6 +142,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <BookOpen className="w-4 h-4 text-rose-500" />
                 <span className="hidden sm:inline">Kembali ke Webstore</span>
+                <span className="sm:hidden">Toko</span>
+              </button>
+            ) : currentView === 'pos' ? (
+              <button
+                onClick={() => setCurrentView('store')}
+                className="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-2xl transition-all shadow-2xs"
+              >
+                <BookOpen className="w-4 h-4 text-rose-500" />
+                <span className="hidden sm:inline">Ke Webstore</span>
                 <span className="sm:hidden">Toko</span>
               </button>
             ) : (

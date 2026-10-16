@@ -10,6 +10,9 @@ import {
   BookOpen,
   LogOut,
   Sparkles,
+  Percent,
+  ShoppingCart,
+  Calculator,
 } from 'lucide-react';
 import { Book, Order, Customer } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -18,6 +21,8 @@ import { TabOrders } from './TabOrders';
 import { TabApprovals } from './TabApprovals';
 import { TabCustomers } from './TabCustomers';
 import { TabSalesReport } from './TabSalesReport';
+import { TabInventoryPricing } from './TabInventoryPricing';
+import { PosWorkstation } from '../Pos/PosWorkstation';
 
 interface AdminDashboardProps {
   books: Book[];
@@ -25,9 +30,10 @@ interface AdminDashboardProps {
   customers: Customer[];
   isDbLive: boolean;
   onBackToStore: () => void;
+  onOpenPos?: () => void;
 }
 
-type AdminTab = 'products' | 'orders' | 'approvals' | 'customers' | 'sales';
+type AdminTab = 'products' | 'pricing' | 'pos' | 'orders' | 'approvals' | 'customers' | 'sales';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   books,
@@ -35,6 +41,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   customers,
   isDbLive,
   onBackToStore,
+  onOpenPos,
 }) => {
   const { adminUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
@@ -112,7 +119,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </span>
             </button>
 
-            {/* Tab 2: Orders */}
+            {/* Tab 2: Pricing & Auto-Ratio */}
+            <button
+              onClick={() => setActiveTab('pricing')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                activeTab === 'pricing'
+                  ? 'bg-amber-500 text-slate-950 shadow-xs'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Percent className="w-4 h-4 text-emerald-400" />
+              <span>Pengaturan Harga & Auto-Ratio</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-500/50">
+                HPP & Margin
+              </span>
+            </button>
+
+            {/* Tab 3: PoS Cashier */}
+            <button
+              onClick={() => setActiveTab('pos')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                activeTab === 'pos'
+                  ? 'bg-rose-500 text-white shadow-xs'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4 text-rose-300" />
+              <span>Kasir PoS Toko</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-900/60 text-rose-200 border border-rose-700/50">
+                Live Kasir
+              </span>
+            </button>
+
+            {/* Tab 4: Orders */}
             <button
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
@@ -132,7 +171,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </span>
             </button>
 
-            {/* Tab 3: Payment Approvals */}
+            {/* Tab 5: Payment Approvals */}
             <button
               onClick={() => setActiveTab('approvals')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
@@ -154,7 +193,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               )}
             </button>
 
-            {/* Tab 4: Customers */}
+            {/* Tab 6: Customers */}
             <button
               onClick={() => setActiveTab('customers')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
@@ -174,7 +213,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </span>
             </button>
 
-            {/* Tab 5: Sales Report */}
+            {/* Tab 7: Sales Report */}
             <button
               onClick={() => setActiveTab('sales')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
@@ -184,7 +223,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               <TrendingUp className="w-4 h-4" />
-              <span>Laporan Sales</span>
+              <span>Laporan Sales & Profit</span>
             </button>
           </nav>
         </div>
@@ -192,7 +231,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Tab Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {activeTab === 'products' && <TabProducts books={books} />}
+        {activeTab === 'products' && (
+          <TabProducts
+            books={books}
+            onOpenPricingTab={() => setActiveTab('pricing')}
+          />
+        )}
+        {activeTab === 'pricing' && <TabInventoryPricing books={books} />}
+        {activeTab === 'pos' && (
+          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-rose-100">
+            <PosWorkstation books={books} onBack={() => setActiveTab('products')} />
+          </div>
+        )}
         {activeTab === 'orders' && (
           <TabOrders orders={orders} onOpenApprovalTab={() => setActiveTab('approvals')} />
         )}

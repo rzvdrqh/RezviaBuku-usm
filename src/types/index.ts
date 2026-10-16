@@ -9,7 +9,9 @@ export interface Book {
     | 'Bahasa'
     | 'Buku Tes (TOEFL / CPNS / UTBK)'
     | string;
-  price: number;
+  price: number; // Harga Jual
+  costPrice?: number; // Harga Beli / HPP
+  profitRatio?: number; // Rasio Keuntungan (%)
   stock: number;
   description: string;
   coverImage: string;
@@ -38,6 +40,7 @@ export interface OrderItem {
   title: string;
   author: string;
   price: number;
+  costPrice?: number;
   quantity: number;
   coverImage: string;
 }
@@ -54,12 +57,16 @@ export interface Order {
   shippingCost: number;
   totalAmount: number;
   status: OrderStatus;
-  paymentMethod: 'bca' | 'mandiri' | 'bri' | 'qris';
+  paymentMethod: 'bca' | 'mandiri' | 'bri' | 'qris' | 'tunai';
   paymentProofUrl?: string;
   paymentProofUploadedAt?: string;
   paymentRejectionReason?: string;
   notes?: string;
   trackingNumber?: string;
+  channel?: 'web' | 'pos';
+  cashPaid?: number;
+  changeDue?: number;
+  cashierName?: string;
   createdAt: string;
   updatedAt?: string;
 }
@@ -73,4 +80,18 @@ export interface Customer {
   totalSpent: number;
   lastOrderDate: string;
   createdAt: string;
+}
+
+export interface PosTransactionPayload {
+  items: {
+    book: Book;
+    quantity: number;
+  }[];
+  paymentMethod: 'tunai' | 'qris' | 'bca' | 'mandiri';
+  cashPaid?: number;
+  changeDue?: number;
+  customerName?: string;
+  customerPhone?: string;
+  cashierName?: string;
+  notes?: string;
 }

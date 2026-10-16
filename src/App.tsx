@@ -17,6 +17,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { AdminLoginModal } from './components/Admin/AdminLoginModal';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
+import { PosWorkstation } from './components/Pos/PosWorkstation';
 import { BookOpen, ShieldCheck, Heart, Truck, Sparkles } from 'lucide-react';
 
 function StoreApp() {
@@ -30,7 +31,7 @@ function StoreApp() {
   const [loadingInitial, setLoadingInitial] = useState(true);
 
   // App navigation state
-  const [currentView, setCurrentView] = useState<'store' | 'admin'>('store');
+  const [currentView, setCurrentView] = useState<'store' | 'admin' | 'pos'>('store');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua Koleksi');
 
@@ -81,6 +82,13 @@ function StoreApp() {
     };
   }, []);
 
+  // Proteksi rute: jika bukan admin, kembalikan ke etalase webstore
+  useEffect(() => {
+    if (!isAdmin && (currentView === 'admin' || currentView === 'pos')) {
+      setCurrentView('store');
+    }
+  }, [isAdmin, currentView]);
+
   const handleOrderSuccess = (orderNumber: string) => {
     setTrackedOrderNumber(orderNumber);
     setIsTrackerOpen(true);
@@ -109,13 +117,21 @@ function StoreApp() {
 
       {/* Main View Router */}
       <div className="flex-1">
-        {currentView === 'admin' && isAdmin ? (
+        {currentView === 'pos' && isAdmin ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <PosWorkstation
+              books={books}
+              onBack={() => setCurrentView('store')}
+            />
+          </div>
+        ) : currentView === 'admin' && isAdmin ? (
           <AdminDashboard
             books={books}
             orders={orders}
             customers={customers}
             isDbLive={isDbLive}
             onBackToStore={() => setCurrentView('store')}
+            onOpenPos={() => setCurrentView('pos')}
           />
         ) : (
           <StoreCatalog
